@@ -1,3 +1,11 @@
+# Universidad Simón Bolívar
+# CI2692: Laboratory of Algorithms and Structures II
+
+# Project 1: Implementing of algorithms to emulate the synthesis process of 
+# 			 proteins.
+# Authors: David Cabeza 13-10191, Fabiola Martinez 13-10838
+# Last edit: Fri 20, May 2016 @ 00:37
+
 def get_compliment(sequence):
 	compliment = ""
 	for nucleobase in sequence:
@@ -76,7 +84,6 @@ class ADNDoble(object):
 		for i in range(0, len(self.doubleseq), 2):
 			print('(',self.doubleseq[i],self.doubleseq[i+1],')', sep ='', end='')
 		print()
-
 
 ADN = ADNDoble("ATGGGCAATCGGTTTGC")
 
