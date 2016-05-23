@@ -1,20 +1,19 @@
 Pendiente
 ------
 General:
-	*Documentar las funciones, clases y métodos
+*Documentar las funciones, clases y métodos
 
 Clase ADNDoble:
-	*Método buscar debería retornar la posición inicial en la que se encuentra la
-	secuencia.
-	*Llamar a unzip sin haber llamado a zip no genera nada ¿Excepciones?
+*Método buscar debería retornar la posición inicial en la que se encuentra la secuencia.
+*Llamar a unzip sin haber llamado a zip no genera nada ¿Excepciones?
 
 Clase ARNt:
-	*Crear un método para complementar el ARNt o modificar los existentes para que
-	detecten si se está en presencia de URACILO o de TIMINA
+*Crear un método para complementar el ARNt o modificar los existentes para que detecten si se está en presencia de URACILO o de TIMINA
 ___
 
 Dudas
 ------
+
 *Clase "proteina"
 *¿Qué significa que una cadena o proteína sea un objeto de una clase? ¿Instancia?
 *¿A qué se refiere con definir las clases contenedoras?
