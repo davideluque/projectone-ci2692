@@ -4,7 +4,8 @@
 # Project 1: Implementing of algorithms to emulate the synthesis process of 
 # 			 proteins.
 # Authors: David Cabeza 13-10191, Fabiola Martinez 13-10838
-# Last edit: Fri 20, May 2016 @ 00:37
+# Last edit: Sun 22, May 2016
+import sys
 
 def get_compliment(sequence):
 	compliment = ""
@@ -21,14 +22,13 @@ def get_compliment(sequence):
 	return compliment
 
 class ADNDoble(object):
-	"""Clase que tiene como instancias cadenas de ADN simple y manipula su 
-	cadena de ADN doble asociada"""
+	"""Class whose instances are sequences of simple ADN. This class manipulates 
+	its associated double sequence"""
 	def __init__(self, simpleseq):
 		self.simpleseq = simpleseq.upper()
 		self.sseqlenght = len(self.simpleseq)
 		self.compliment = ""
 		self.doubleseq = ""
-		self.dseqlenght = len(self.doubleseq)
 
 	def zip(self):
 		print('\nBeginning to zip the sequence', ADN.simpleseq)
@@ -59,7 +59,7 @@ class ADNDoble(object):
 		print(seqOne,'and', seqTwo)
 
 	def mitosis(self):
-		print('\nBeginning the mitosis proccess for the sequence', ADN.doubleseq)	
+		print('\nBeginning the mitosis process for the sequence', ADN.doubleseq)	
 		print('Beginning to unzip the double sequence')
 		seqOne = ""
 		for i in range(0, len(self.doubleseq), 2):
@@ -85,10 +85,64 @@ class ADNDoble(object):
 			print('(',self.doubleseq[i],self.doubleseq[i+1],')', sep ='', end='')
 		print()
 
-ADN = ADNDoble("ATGGGCAATCGGTTTGC")
+	def write(self, file):
+		if not '.txt' in file:
+			file += '.txt'
+		with open(file, 'a') as f:
+			f.write(self.doubleseq)
 
-ADN.zip()
-ADN.unzip()
-ADN.buscar("ATA")
-ADN.mitosis()
-ADN.imprimir()
+class ADNSimple(object):
+	"""Instances: Simple ADN sequence"""
+	def __init__(self, sequence):
+		self.sequence = sequence
+		self.complim = ""
+
+	def compliment(self):
+		for nucleobase in self.sequence:
+			if nucleobase == "A":
+				self.complim += "T"
+			elif nucleobase == "T":
+				self.complim += "A"
+			elif nucleobase == "G":
+				self.complim += "C"
+			elif nucleobase == "C":
+				self.complim += "G"
+
+	def transliterate(self):
+		if not self.complim:
+			self.complim == self.compliment()
+
+		self.ARNt = ""
+		for nb in self.complim:
+			if nb == "T":
+				self.ARNt += "U"
+			else:
+				self.ARNt += nb
+
+		return self.ARNt
+
+class ARNt(ADNSimple):
+	"""docstring for ARNt"""
+	def __init__(self, sequence):
+		self.sequence = sequence
+
+	def translate(self):
+		if 'AUG' in self.sequence:
+			print('Hay un codon de inicio. Ver dónde.')
+
+# Main program			
+if __name__ == '__main__':
+	ADN = ADNDoble("ATGGGCAATCGGTTTGC")
+	ADN.zip()
+	ADN.unzip()
+	ADN.buscar("ATA")
+	ADN.mitosis()
+	ADN.imprimir()
+
+	ADNs = ADNSimple("ATGGGCAATCGGTTTGC")
+	ADNs.compliment() # If you don't call this method first, the transliterate method
+	transliterated = ADNs.transliterate() # will do it automatically.
+
+	print(transliterated)
+	protein = ARNt(transliterated)
+	protein.translate()
