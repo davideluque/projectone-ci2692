@@ -12,7 +12,7 @@ def get_compliment(sequence):
 	for nucleobase in sequence:
 		if nucleobase == "A":
 			compliment += "T"
-		elif nucleobase == "T":
+		elif nucleobase == "T" or nucleobase == 'U':
 			compliment += "A"
 		elif nucleobase == "G":
 			compliment += "C"
@@ -72,7 +72,7 @@ class ADNDoble(object):
 		CseqTwo = get_compliment(seqTwo)
 
 	def buscar(self, subcadena):
-		print("\nBeginning finding subsequence process..")
+		print("\nBeginning search subsequence process..")
 		compliment = get_compliment(subcadena)
 		if subcadena in self.doubleseq:
 			print('MATCH, we found', subcadena, 'in', self.doubleseq)
@@ -125,10 +125,60 @@ class ARNt(ADNSimple):
 	"""docstring for ARNt"""
 	def __init__(self, sequence):
 		self.sequence = sequence
+		self.size = len(sequence)
+		self.aminoacids = ['Phe', 'Phe', 'Leu','Leu', 'Ser', 'Ser', 'Ser', 
+		'Ser', 'Tyr', 'Tyr', 'STOP', 'STOP', 'Cys', 'Cys', 'STOP', 'Trp',
+		'Leu', 'Leu','Leu','Leu', 'Pro', 'Pro', 'Pro', 'Pro', 'His', 'His',
+		'Gln', 'Gln', 'Arg', 'Arg', 'Arg', 'Arg', 'Ile', 'Ile', 'Ile', 'Met',
+		'Thr', 'Thr', 'Thr', 'Thr', 'Asn', 'Asn', 'Lys', 'Lys', 'Ser', 'Ser',
+		'Arg', 'Arg', 'Val', 'Val', 'Val', 'Val', 'Ala', 'Ala', 'Ala', 'Ala', 
+		'Asp', 'Asp', 'Glu', 'Glu', 'Gly', 'Gly', 'Gly', 'Gly']
+		self.proteins = []
+		self.letras = ['U', 'C', 'A', 'G']
+		self.ARNJunks = []
 
 	def translate(self):
-		if 'AUG' in self.sequence:
-			print('Hay un codon de inicio. Ver dónde.')
+		start = False
+		for i in range(0, self.size, 3):
+			trio = self.sequence[i]+self.sequence[i+1]+self.sequence[i+2]
+			if i == 69:
+				print(trio)
+				print(start)
+			letras = False
+			if not start and trio == 'AUG':
+				start = True
+				start_index = i
+				end = False
+				letras = True
+				temp = []
+			if start and trio != 'AUG' and trio != 'UAA' and trio != 'UAG'\
+			and trio != 'UGA':
+				value = self.letras.index(self.sequence[i]) * 16 \
+				+ self.letras.index(self.sequence[i+1]) * 4 \
+				+ self.letras.index(self.sequence[i+2]) * 1
+				temp.append(self.aminoacids[value])
+				letras = True
+			if not end and trio == 'UAA' or trio == 'UAG' or trio == 'UGA':	
+				self.proteins.append(temp)
+				del temp
+				start = False
+				end = True
+				letras = True
+			if start and not end and not letras:
+				j = start_index + 3
+				temporary = []
+				while j != i:
+					junk = self.sequence[j] + self.sequence[j+1] + self.sequence[j+2]
+					j += 3
+					temporary.append(junk)
+				self.ARNJunks.append(temporary)
+				del temporary
+				start = False
+				end = True
+				del temp
+		
+		print(self.proteins)
+		print(self.ARNJunks)
 
 # Main program			
 if __name__ == '__main__':
@@ -139,7 +189,8 @@ if __name__ == '__main__':
 	ADN.mitosis()
 	ADN.imprimir()
 
-	ADNs = ADNSimple("ATGGGCAATCGGTTTGC")
+	var = get_compliment('ATGTTTTTCTTATTGTCTTCCTCATCGTATTACTAAATGACGATAGTAGATTGAATGTTCTAAATGTTTATGTCTTAA')
+	ADNs = ADNSimple(var)
 	ADNs.compliment() # If you don't call this method first, the transliterate method
 	transliterated = ADNs.transliterate() # will do it automatically.
 
