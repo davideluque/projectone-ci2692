@@ -3,10 +3,14 @@
 # Project 1: Implementing of algorithms to emulate the synthesis process of 
 # 			 proteins.
 # Authors: David Cabeza 13-10191, Fabiola Martinez 13-10838
-# Last edit: Mon 30, May 2016
+# Last edit: Tue 31, May 2016
 
 import sys
 from random import randint
+
+################################################################################
+#								METHODS										   #
+################################################################################
 
 ################### get_complement_tRNA METHOD #################################
 # Description: This method receives a tRNA sequence and complements it changing
@@ -48,6 +52,28 @@ def get_complement(sequence):
 
 	return complement
 
+######################### transliterate_seq METHOD #############################
+# Description: This method receives a RNA sequence and transliterates it by
+#			   changing Uracyl for Timine and viceversa
+# Input: Receives a sequence of DNA to be complemented 
+# Output: Returns the complement of the given DNA sequence
+################################################################################
+def transliterate_seq(sequence):
+	temp = ""
+	for base in sequence:
+		if base == "U": temp += "T"
+		elif base == "T": temp += "U"
+		else: temp += base
+
+	return temp
+
+########################### quicksort METHOD ###################################
+# Description: This quicksort sorts the array given by the lenght of the arrays 
+#			   If arrays have the same lenght, the sorting is made by alphabetic
+#			   order.
+# Input: Array to sort, start index(optional), end index(optional)
+# Output: Array sorted decreasingly.
+################################################################################
 def Partition(A, p, r):
 	x = len(A[r])
 	i = p - 1
@@ -108,103 +134,236 @@ def heapify(A, idx, mx):
 		A[idx], A[largest] = A[largest], A[idx]
 		heapify(A, largest, mx)
 
-class DNADoble(object):
-	"""Class whose instances are sequences of simple DNA. This class manipulates 
-	its associated double sequence"""
-	def __init__(self, simpleseq):
-		self.simpleseq = simpleseq.upper()
-		self.sseqlenght = len(self.simpleseq)
-		self.complement = ""
-		self.doubleseq = ""
+def mergesort_merge(A, p, q, r):
+	n = q - p + 1
+	m = r - q 
 
-	def zip(self):
-		print('\nBeginning to zip the sequence', DNA.simpleseq)
-		for nucleobase in self.simpleseq:
-			if nucleobase == "A":
-				self.doubleseq += "AT"
-			elif nucleobase == "T":
-				self.doubleseq += "TA"
-			elif nucleobase == "G":
-				self.doubleseq += "GC"
-			elif nucleobase == "C":
-				self.doubleseq += "CG"
-
-		self.complement = get_complement(self.simpleseq)
-		print('The complement for the DNA sequence given is:', self.complement)
-		print('The double sequence for the given is:', self.doubleseq)
-		print('Zip process was made successfully!!')
+	L = [A[p+i-1] for i in range(1, n+1)]
+	R = [A[q+i] for i in range(1, m+1)]
 	
+	i = j = 0
+
+	for k in range(p, r+1):
+		if i == len(L): A[k] = R[j]
+		elif j == len(R): A[k] = L[i]
+		elif L[i] <= R[j]:
+			A[k] = L[i]
+			i += 1
+		else:
+			A[k] = R[j]
+			j += 1
+
+def mergesort(A, p = None, r = None):
+	p = p if p else 0 
+	r = r if r else len(A) - 1
+
+	if p < r:
+		q = (p + r) // 2
+		mergesort(A, p, q)
+		mergesort(A, q+1, r)
+		mergesort_merge(A, p, q, r)
+
+	return A
+
+################################################################################
+#								CLASSES										   #
+################################################################################
+
+class DNADouble(object):
+	"""Class whose instances are simple DNA sequences. Manipulates associated 
+	double sequence"""
+	def __init__(self, sequence):
+		self.sequence = sequence.upper()
+		self.lenght = len(self.sequence)
+		self.complement = ""
+		self.double = ""
+
+	############################# zip METHOD ###################################
+	# Description: Receives a simple DNA sequence, calculates its complement and
+	#			   returns the double DNA sequence.
+	# Input: Simple DNA sequence
+	# Output: Double DNA sequence
+	############################################################################
+	def zip(self):
+		print('\nBeginning to zip the sequence', DNA.sequence)
+		
+		for nucleobase in self.sequence:
+			
+			if nucleobase == "A":
+				complement = "T"
+				self.complement += complement
+				self.double += nucleobase + complement
+			
+			elif nucleobase == "T":
+				complement = "A"			
+				self.complement += complement
+				self.double += nucleobase + complement
+			
+			elif nucleobase == "G":
+				complement = "C"			
+				self.complement += complement
+				self.double += nucleobase + complement
+			
+			elif nucleobase == "C":
+				complement = "G"		
+				self.complement += complement
+				self.double += nucleobase + complement
+
+		print('Complement:', self.complement)
+		print('Double sequence', self.double)
+
+		return self.double
+	
+	############################# unzip METHOD #################################
+	# Description: Receives a double DNA sequence and splits it into two simple
+	#			   sequences
+	# Input: Double DNA sequence
+	# Output: Simple DNA sequences
+	############################################################################
 	def unzip(self):
-		print('\nBeginning to unzip the sequence', DNA.doubleseq)	
-		seqOne = ""
-		for i in range(0, len(self.doubleseq), 2):
-			seqOne += self.doubleseq[i]
-		seqTwo = ""
-		for j in range(1, len(self.doubleseq), 2):
-			seqTwo += self.doubleseq[j]
-		print('The simple two sequences are:')
-		print(seqOne,'and', seqTwo)
+		if not self.double:
+			print('Couldn\'t unzip sequence. Please call first zip method.')
+			return None
 
+		else:
+			print('\nBeginning to unzip the sequence', self.double)	
+			
+			simple_a = ""
+			for i in range(0, len(self.double), 2):
+				simple_a += self.double[i]
+			
+			simple_b = ""
+			for j in range(1, len(self.double), 2):
+				simple_b += self.double[j]
+			
+			print('Simple sequences are:', simple_a, 'and', simple_b)
+
+			return simple_a, simple_b
+
+	############################# mitosis METHOD ###############################
+	# Description: Creates a copy of the double sequence through mitosis
+	# Input: Double DNA sequence
+	# Output: Simple DNA sequences
+	############################################################################
 	def mitosis(self):
-		print('\nBeginning the mitosis process for the sequence', DNA.doubleseq)	
-		print('Beginning to unzip the double sequence')
-		seqOne = ""
-		for i in range(0, len(self.doubleseq), 2):
-			seqOne += self.doubleseq[i]
-		seqTwo = ""
-		for j in range(1, len(self.doubleseq), 2):
-			seqTwo += self.doubleseq[j]
-		print('Beginning to calculate the complements')
-		CseqOne = get_complement(seqOne)
-		CseqTwo = get_complement(seqTwo)
+		print('\nBeginning mitosis for:', self.double)
+		simple_a, simple_b = self.unzip()	
 
-	def buscar(self, subcadena):
-		print("\nBeginning search subsequence process..")
-		complement = get_complement(subcadena)
-		if subcadena in self.doubleseq:
-			print('MATCH, we found', subcadena, 'in', self.doubleseq)
-		if complement in self.doubleseq:
-			print('MATCH, we found the complement', complement, 'of', subcadena,'in', self.doubleseq)
+		simple_a_complement = get_complement(simple_a)
+		simple_b_complement = get_complement(simple_b)
 
-	def imprimir(self):
+		return simple_a_complement, simple_b_complement
+	
+	############################# search METHOD ###############################
+	# Description: Receives a simple DNA sequence and looks for a match in DNA.
+	#			   The search is made simultaneously for the sequence and its
+	#			   complement
+	# Input: Simple sequence
+	# Output: Returns True if a match exists
+	############################################################################
+	def search(self, subsequence):
+		print("\nSearching", subsequence, 'in', self.double, '...')
+		
+		i = 0
+		for j in range(0, len(self.double)):
+			if i != len(subsequence):
+				if subsequence[i] == self.double[j]:
+					Match = True
+					i += 1
+					continue
+				else:
+					Match = False
+					i = 0
+					continue
+			else:
+				match_index = j - len(subsequence)
+				print('Match, the subsequence begins in position', match_index, \
+				'of the double sequence.')
+				return True 
+				break
+		else:
+			if not Match:
+				print('Subsequence was not found')
+				return False
+
+		complement = get_complement(subsequence)
+		if complement in self.double:
+			print('MATCH, we found the complement', complement, 'of', subsequence)
+
+	############################# printpairs METHOD ############################
+	# Description: Prints double DNA sequence in pairs
+	# Input: Double DNA sequence
+	# Output: Pairs in parentheses () of double DNA
+	############################################################################
+	def printpairs(self):
 		print()
-		for i in range(0, len(self.doubleseq), 2):
-			print('(',self.doubleseq[i],self.doubleseq[i+1],')', sep ='', end='')
+		for i in range(0, len(self.double), 2):
+			print('(',self.double[i],self.double[i+1],')', sep ='', end='')
 		print()
 
+	############################### write METHOD ###############################
+	# Description: Add (or creates) a file with the double DNA sequence
+	# Input: Name of the file
+	# Output: Pairs in parentheses () of double DNA
+	############################################################################
 	def write(self, file):
-		if not '.txt' in file:
-			file += '.txt'
 		with open(file, 'a') as f:
-			f.write(self.doubleseq)
+			f.write(self.double + '\n')
+			f.close()		
+		assert(f.closed)
 
 class DNASimple(object):
 	"""Instances: Simple DNA sequence"""
 	def __init__(self, sequence):
 		self.sequence = sequence
-		self.complem = ""
+		self.sequence_complement = ""
 
+	######################## complement METHOD #################################
+	# Description: This method receives a DNA sequence and complements it by
+	#			   changing Timine for Adenine, Guanine for Cytosine and vice 
+	#			   versa.
+	# Input: Receives a sequence of DNA to be complemented 
+	# Output: Returns the complement of the given DNA sequence
+	############################################################################
 	def complement(self):
+		
 		for nucleobase in self.sequence:
-			if nucleobase == "A":
-				self.complem += "T"
-			elif nucleobase == "T":
-				self.complem += "A"
-			elif nucleobase == "G":
-				self.complem += "C"
-			elif nucleobase == "C":
-				self.complem += "G"
 
+			if nucleobase == "A":
+				temp_complement = "T"
+				self.sequence_complement += temp_complement
+			
+			elif nucleobase == "T":
+				temp_complement = "A"
+				self.sequence_complement += temp_complement
+			
+			elif nucleobase == "G":
+				temp_complement = "C"
+				self.sequence_complement += temp_complement
+			
+			elif nucleobase == "C":
+				temp_complement = "G"
+				self.sequence_complement += temp_complement
+
+			return self.sequence_complement
+
+	######################## transliterate METHOD ##############################
+	# Description: This method changes Timine by Uracil in the complement of the
+	#			   simple sequence.
+	# Input: Receives the complement of a simple sequence
+	# Output: Returns the sequence as tRNA with Timine changed by Uracil
+	############################################################################
 	def transliterate(self):
-		if not self.complem:
-			self.complem == self.complement()
+		if not self.sequence_complement:
+			self.sequence_complement == self.complement()
 
 		self.tRNA = ""
-		for nb in self.complem:
-			if nb == "T":
+		for nucleobase in self.sequence_complement:
+			if nucleobase == "T":
 				self.tRNA += "U"
+			
 			else:
-				self.tRNA += nb
+				self.tRNA += nucleobase
 
 		return self.tRNA
 
@@ -271,7 +430,7 @@ class tRNA():
 				continue
 		else:
 			if Start and not End:
-				#Start_index += 3 # If this is commented, the AUG will not take into
+				#Start_index += 3 # If this is commented, the AUG will be taken into
 				# account for trash.
 				Trash = ''
 				while Start_index != i+3:
@@ -279,7 +438,7 @@ class tRNA():
 					+ self.sequence[Start_index+2]
 					Trash += Temp_trash
 					Start_index += 3
-				self.DNATrash.append(get_complement(Trash))
+				self.DNATrash.append(transliterate_seq(Trash))
 				self.tRNATrash.append(Trash)
 
 		heapsort(self.frequencies)
@@ -289,14 +448,19 @@ class tRNA():
 		#print(self.tRNATrash)
 		#print(self.DNATrash)
 
-# Main program			
+
+################################################################################
+#								MAIN PROGRAM								   #
+################################################################################			
 if __name__ == '__main__':
-	DNA = DNADoble("ATGGGCAATCGGTTTGC") 
+	DNA = DNADouble("ATGGGCAATCGGTTTGC") 
 	DNA.zip()
 	DNA.unzip()
-	DNA.buscar("ATA")
+	DNA.search("ATA")
+	DNA.search("TGA")
 	DNA.mitosis()
-	DNA.imprimir()
+	DNA.printpairs()
+	DNA.write('cadenas.txt')	
 
 	var = get_complement("ATGTTTTTCTTATTGTCTTCCTCATCGTATTACTAAATGACGATAGTAGATTGAATGTTCTAAATGTTTATGTCTTAAATGCTTAACTGAATGTTCAGCTAGATGGAGTAT")
 	DNAs = DNASimple(var)
