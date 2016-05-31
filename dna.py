@@ -6,20 +6,66 @@
 # Authors: David Cabeza 13-10191, Fabiola Martinez 13-10838
 # Last edit: Sun 22, May 2016
 import sys
+from colorama import *
+init()
 
-def get_compliment(sequence):
-	compliment = ""
+# Function get_complemet: get a simple strand and return its complement
+# Parameters: 
+# 	Sequence: a simple strand of DNA
+def get_complement(sequence):
+	complement = ""
 	for nucleobase in sequence:
 		if nucleobase == "A":
-			compliment += "T"
+			complement += "T"
 		elif nucleobase == "T" or nucleobase == 'U':
-			compliment += "A"
+			complement += "A"
 		elif nucleobase == "G":
-			compliment += "C"
+			complement += "C"
 		elif nucleobase == "C":
-			compliment += "G"
+			complement += "G"
 
-	return compliment
+	return complement
+
+# Function read strands: read a file that it conteins strands of DNA, then the creates the complement and finally write doble DNA in pairs
+# Parameters:
+#
+def read_strands(DnaFile):
+	DNAsimple = []
+	with open(DnaFile, 'r') as f:
+		for line in f:
+			line = line.rstrip()
+			DNAsimple.append(line)
+		print('Beginning to read a strand file...')
+		print(DNAsimple)	
+	f.close()
+
+	complements = []
+	for elements in DNAsimple:
+		get_complement(elements)
+		complements.append(get_complement(elements))
+	print('Getting complement...')
+	print(complements)
+
+	DNADoble = []
+	for i in range(0,len(complements)):
+		for core in complements[i]:
+			if core == "A":
+				DNADoble += "AT"
+			elif core == "T":
+				DNADoble += "TA"
+			elif core == "G":
+				DNADoble += "GC"
+			elif core == "C":
+				DNADoble += "CG"
+	print('Getting DNADoble...')
+	print(DNADoble)
+	
+	print('Create the pars...')
+	for i in range(0, len(DNADoble), 2):
+		print('(' + Fore.RED + DNADoble[i], Fore.BLUE + DNADoble[i+1], Style.RESET_ALL+')', sep ='', end='')
+
+print(read_strands('data.txt'))
+
 
 class ADNDoble(object):
 	"""Class whose instances are sequences of simple ADN. This class manipulates 
@@ -27,9 +73,12 @@ class ADNDoble(object):
 	def __init__(self, simpleseq):
 		self.simpleseq = simpleseq.upper()
 		self.sseqlenght = len(self.simpleseq)
-		self.compliment = ""
+		self.complement = ""
 		self.doubleseq = ""
 
+# Function zip: get a simple strand, then mades the complement and finally creates the doble DNA
+# Parameters: 
+# 
 	def zip(self):
 		print('\nBeginning to zip the sequence', ADN.simpleseq)
 		for nucleobase in self.simpleseq:
@@ -42,11 +91,14 @@ class ADNDoble(object):
 			elif nucleobase == "C":
 				self.doubleseq += "CG"
 
-		self.compliment = get_compliment(self.simpleseq)
-		print('The compliment for the DNA sequence given is:', self.compliment)
+		self.complement = get_complement(self.simpleseq)
+		print('The complement for the DNA sequence given is:', self.complement)
 		print('The double sequence for the given is:', self.doubleseq)
 		print('Zip process was made successfully!!')
 	
+# Function unzip: get a doble strand and divide it in two simple strand
+# Parameters: 
+# 	
 	def unzip(self):
 		print('\nBeginning to unzip the sequence', ADN.doubleseq)	
 		seqOne = ""
@@ -58,6 +110,9 @@ class ADNDoble(object):
 		print('The simple two sequences are:')
 		print(seqOne,'and', seqTwo)
 
+# Function mitosis: get a doble strand then duplicate this and return two doble stra
+# Parameters: 
+# 
 	def mitosis(self):
 		print('\nBeginning the mitosis process for the sequence', ADN.doubleseq)	
 		print('Beginning to unzip the double sequence')
@@ -67,23 +122,34 @@ class ADNDoble(object):
 		seqTwo = ""
 		for j in range(1, len(self.doubleseq), 2):
 			seqTwo += self.doubleseq[j]
-		print('Beginning to calculate the compliments')
-		CseqOne = get_compliment(seqOne)
-		CseqTwo = get_compliment(seqTwo)
+		print('Beginning to calculate the complements')
+		CseqOne = get_complement(seqOne)
+		CseqTwo = get_complement(seqTwo)
+
+# Function buscar: get a simple substrand and search its match in doble strand
+# Parameters: 
+# 
 
 	def buscar(self, subcadena):
 		print("\nBeginning search subsequence process..")
-		compliment = get_compliment(subcadena)
+		complement = get_complement(subcadena)
 		if subcadena in self.doubleseq:
 			print('MATCH, we found', subcadena, 'in', self.doubleseq)
-		if compliment in self.doubleseq:
-			print('MATCH, we found the compliment', compliment, 'of', subcadena,'in', self.doubleseq)
+		if complement in self.doubleseq:
+			print('MATCH, we found the complement', complement, 'of', subcadena,'in', self.doubleseq)
 
+# Function imprimir: write the strand in par form
+# Parameters: 
+#
 	def imprimir(self):
 		print()
 		for i in range(0, len(self.doubleseq), 2):
-			print('(',self.doubleseq[i],self.doubleseq[i+1],')', sep ='', end='')
+			print('(' + Fore.RED + self.doubleseq[i], Fore.BLUE + self.doubleseq[i+1], Style.RESET_ALL+')', sep ='', end='')
 		print()
+
+# Function write: it allows write in a file and save the proteins or the strands
+# Parameters:
+#
 
 	def write(self, file):
 		if not '.txt' in file:
@@ -97,7 +163,11 @@ class ADNSimple(object):
 		self.sequence = sequence
 		self.complim = ""
 
-	def compliment(self):
+# Function complimet: get a simple strand and return its complement
+# Parameters: 
+#
+
+	def complement(self):
 		for nucleobase in self.sequence:
 			if nucleobase == "A":
 				self.complim += "T"
@@ -108,9 +178,13 @@ class ADNSimple(object):
 			elif nucleobase == "C":
 				self.complim += "G"
 
+# Function tansilerate: change the Timina by Uracilo
+# Parameters: 
+#
+
 	def transliterate(self):
 		if not self.complim:
-			self.complim == self.compliment()
+			self.complim == self.complement()
 
 		self.ARNt = ""
 		for nb in self.complim:
@@ -137,6 +211,8 @@ class ARNt(ADNSimple):
 		self.letras = ['U', 'C', 'A', 'G']
 		self.ARNJunks = []
 
+# Function translate: search the start codon and process the secuence until find the stop protein 
+# Parameters:
 	def translate(self):
 		start = False
 		for i in range(0, self.size, 3):
@@ -189,11 +265,12 @@ if __name__ == '__main__':
 	ADN.mitosis()
 	ADN.imprimir()
 
-	var = get_compliment('ATGTTTTTCTTATTGTCTTCCTCATCGTATTACTAAATGACGATAGTAGATTGAATGTTCTAAATGTTTATGTCTTAA')
+	var = get_complement('ATGTTTTTCTTATTGTCTTCCTCATCGTATTACTAAATGACGATAGTAGATTGAATGTTCTAAATGTTTATGTCTTAA')
 	ADNs = ADNSimple(var)
-	ADNs.compliment() # If you don't call this method first, the transliterate method
+	ADNs.complement() # If you don't call this method first, the transliterate method
 	transliterated = ADNs.transliterate() # will do it automatically.
 
 	print(transliterated)
 	protein = ARNt(transliterated)
 	protein.translate()
+	protein.size()
