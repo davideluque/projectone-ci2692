@@ -349,7 +349,7 @@ class DNADouble(object):
 		print()
 
 	############################### write METHOD ###############################
-	# Description: Add (or creates) a file with the double DNA sequence
+	# Description: Add (creates) to a (a) file with the double DNA sequence
 	# Input: Name of the file
 	# Output: Pairs in parentheses () of double DNA
 	############################################################################
@@ -393,7 +393,7 @@ class DNASimple(object):
 				temp_complement = "G"
 				self.sequence_complement += temp_complement
 
-			return self.sequence_complement
+		return self.sequence_complement
 
 	######################## transliterate METHOD ##############################
 	# Description: This method changes Timine by Uracil in the complement of the
@@ -491,10 +491,12 @@ class tRNA():
 
 		heapsort(self.frequencies)
 		quicksort(self.proteins)
+		print(self.DNATrash)
+		mergesort(self.DNATrash)
+		print(self.DNATrash)
 		#print(self.frequencies)
 		#print(self.proteins)
 		#print(self.tRNATrash)
-		#print(self.DNATrash)
 
 
 ################################################################################
