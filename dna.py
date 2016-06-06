@@ -94,16 +94,6 @@ def read_strands(DnaFile):
 
 print(read_strands('data.txt'))
 
-
-class ADNDoble(object):
-	"""Class whose instances are sequences of simple ADN. This class manipulates 
-	its associated double sequence"""
-	def __init__(self, simpleseq):
-		self.simpleseq = simpleseq.upper()
-		self.sseqlenght = len(self.simpleseq)
-		self.complement = ""
-		self.doubleseq = ""
-
 ######################### transliterate_seq METHOD #############################
 # Description: This method receives a RNA sequence and transliterates it by
 #			   changing Uracyl for Timine and viceversa
