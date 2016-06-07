@@ -1,8 +1,8 @@
 Pendiente
 ------
 <b>General:</b>
-+ Documentar las funciones, clases y métodos
-+ Todas las clases deben tener el método escribir(archivo) que guarda respectivamente todas las cadenas o proteínas almacenadas.
++ DONE ~~Documentar las funciones, clases y métodos.~~
++ DONE ~~Todas las clases deben tener el método escribir(archivo) que guarda respectivamente todas las cadenas o proteínas almacenadas.~~
 
 <b>*Clase ADNDoble:*</b>
 + DONE ~~Método buscar debería retornar la posición inicial en la que se encuentra la secuencia.~~

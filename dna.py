@@ -3,7 +3,7 @@
 # Project 1: Implementing of algorithms to emulate the synthesis process of 
 # 			 proteins.
 # Authors: David Cabeza 13-10191, Fabiola Martinez 13-10838
-# Last edit: Mon 06, May 2016
+# Last edit: Tue 07, Jun 2016
 
 import sys
 from random import randint
@@ -83,16 +83,66 @@ def read_sequence(DnaFile):
 
 		for line in f:
 			line = line.rstrip()
-			if line:
+			if line:	# Avoid empty lines
 				DNA_sequences.append(line)
 		
 		f.close()
 
 	return DNA_sequences
 
+############################# read_strands METHOD ##############################
+# Description: Read file simple strands, one by line, creates double strands by 
+# 			   complementing and interlacing the pairs.
+# Input: Receives file name.
+# Output: Pairs printed and True if all was did.
+################################################################################
+def read_strands(DnaFile):
+	
+	DNA_sequences = []
+	
+	try:
+		with open(DnaFile, 'r') as f:
+
+			for line in f:
+				line = line.rstrip()
+				if line:	# Avoid empty lines
+					DNA_sequences.append(line)
+			
+			f.close()
+
+		for sequence in DNA_sequences:
+			Instance = DNADouble(sequence)
+			Instance.zip()
+			Instance.printpairs()
+
+		return True
+
+	except:
+		print('File with name', DnaFile,'doesn\'t exists.')
+
+############################# loop_heap METHOD #################################
+# Description: This method go through the frequencies heap and prints information
+# Input: Heap with frequencies.
+# Output: Prints the codon, its frequency and which protein should codify that 
+# 		  codon
+################################################################################
 def loop_heap(heap):
 	for heaps in heap:
-		print('Codon:', heaps[0], 'with frequency:', heaps[1])
+		print('Codon:', heaps[0], 'with frequency:', heaps[1], 'should codify:', heaps[2])
+
+	return True
+
+########################### trash_transform METHOD #############################
+# Description: Auxiliar method for transforming trash stored in array into a string
+# Input: Array with trash.
+# Output: Trash in a string.
+################################################################################
+def trash_transform(array):
+	Trash = ""
+	for i in range(len(array)):
+		Trash += array[i]
+
+	return Trash
 
 ########################### quicksort METHOD ###################################
 # Description: This quicksort sorts the array given by the lenght of the arrays 
@@ -135,6 +185,11 @@ def quicksort(A, p = None, r = None):
 
 	return A
 
+############################### heapsort METHOD ################################
+# Description: Sorts by frequency the codons.
+# Input: Array to sort.
+# Output: Frequency array sorted decreasignly
+################################################################################
 def heapsort(A):
 	n = len(A)	
 	buildHeap(A)
@@ -161,6 +216,11 @@ def heapify(A, idx, mx):
 		A[idx], A[largest] = A[largest], A[idx]
 		heapify(A, largest, mx)
 
+################################# mergesort METHOD #############################
+# Description: Used to sort the trash.
+# Input: Array to sort.
+# Output: Array sorted from A being first to Z being last.
+################################################################################
 def mergesort_merge(A, p, q, r):
 	n = q - p + 1
 	m = r - q 
@@ -180,9 +240,7 @@ def mergesort_merge(A, p, q, r):
 			A[k] = R[j]
 			j += 1
 
-def mergesort(A, p = None, r = None):
-	p = p if p else 0 
-	r = r if r else len(A) - 1
+def mergesort(A, p, r):
 
 	if p < r:
 		q = (p + r) // 2
@@ -196,9 +254,14 @@ def mergesort(A, p = None, r = None):
 #								CLASSES										   #
 ################################################################################
 
+############################# DNADouble CLASS ##################################
+# Description: Class whose instances are simple DNA sequences. Manipulates 
+# associated double sequence
+# Instances: Simple DNA sequence
+# Methods: zip, unzip, mitosis, search, printpairs and write.
+################################################################################
 class DNADouble(object):
-	"""Class whose instances are simple DNA sequences. Manipulates associated 
-	double sequence"""
+
 	def __init__(self, sequence):
 		self.sequence = sequence.upper()
 		self.lenght = len(self.sequence)
@@ -289,8 +352,9 @@ class DNADouble(object):
 	# Output: Returns True if a match exists
 	############################################################################
 	def search(self, subsequence):
+
 		print("\nSearching", subsequence, 'in', self.double, '...')
-		
+
 		i = 0
 		for j in range(0, len(self.double)):
 			if i != len(subsequence):
@@ -306,16 +370,35 @@ class DNADouble(object):
 				match_index = j - len(subsequence)
 				print('Match, the subsequence begins in position', match_index, \
 				'of the double sequence.')
-				return True 
 				break
 		else:
 			if not Match:
 				print('Subsequence was not found')
-				return False
 
-		complement = get_complement(subsequence)
-		if complement in self.double:
-			print('MATCH, we found the complement', complement, 'of', subsequence)
+		subsequence_complement = get_complement(subsequence)
+		print("Searching", subsequence_complement, 'in', self.double, '...')
+		
+		i = 0
+		for j in range(0, len(self.double)):
+			if i != len(subsequence_complement):
+				if subsequence_complement[i] == self.double[j]:
+					Match_subsequence = True
+					i += 1
+					continue
+				else:
+					Match_subsequence = False
+					i = 0
+					continue
+			else:
+				match_index = j - len(subsequence_complement)
+				print('Match, the complement of the subsequence begins in position', 
+					match_index, 'of the double sequence.')
+				return Match, Match_subsequence 
+				break
+		else:
+			if not Match_subsequence:
+				print('Subsequence was not found')
+				return Match, Match_subsequence
 
 	############################# printpairs METHOD ############################
 	# Description: Prints double DNA sequence in pairs
@@ -341,11 +424,18 @@ class DNADouble(object):
 
 		return True
 
+############################# DNASimple CLASS ##################################
+# Description: Class whose instances are simple DNA sequences. Complement, 
+# transliterates and writes those instances.
+# Instances: Simple DNA sequence
+# Methods: complement, transliterate and write.
+################################################################################
 class DNASimple(object):
-	"""Instances: Simple DNA sequence"""
+
 	def __init__(self, sequence):
 		self.sequence = sequence
 		self.sequence_complement = ""
+		self.lenght = len(sequence)
 
 	######################## complement METHOD #################################
 	# Description: This method receives a DNA sequence and complements it by
@@ -409,16 +499,21 @@ class DNASimple(object):
 
 		return True
 
-class tRNA():
-	"""docstring for tRNA"""
+################################ tRNA CLASS ####################################
+# Description: Class that stores proteins, transport RNA trash and frequencies of 
+# codons.
+# Instances: Transport RNA sequence.
+# Methods: Translate and write. 
+################################################################################
+class tRNA(object):
 	def __init__(self, sequence):
 		self.sequence = sequence
-		self.size = len(self.sequence)
+		self.lenght = len(self.sequence)
 		self.complement = ""
 		self.complementsize = len(self.complement)
 		self.bases = ['U', 'C', 'A', 'G']
 		self.aminoacids = ['Phe', 'Phe', 'Leu','Leu', 'Ser', 'Ser', 'Ser', 
-		'Ser', 'Tyr', 'Tyr', 'STOP', 'STOP', 'Cys', 'Cys', 'STOP', 'Trp',
+		'Ser', 'Tyr', 'Tyr', 'Och', 'Amb', 'Cys', 'Cys', 'Opa', 'Trp',
 		'Leu', 'Leu','Leu','Leu', 'Pro', 'Pro', 'Pro', 'Pro', 'His', 'His',
 		'Gln', 'Gln', 'Arg', 'Arg', 'Arg', 'Arg', 'Ile', 'Ile', 'Ile', 'Met',
 		'Thr', 'Thr', 'Thr', 'Thr', 'Asn', 'Asn', 'Lys', 'Lys', 'Ser', 'Ser',
@@ -426,7 +521,8 @@ class tRNA():
 		'Asp', 'Asp', 'Glu', 'Glu', 'Gly', 'Gly', 'Gly', 'Gly']
 		self.proteins = []
 		self.tRNATrash = []
-		self.DNATrash = []
+		self.DNATrashTemp = []
+		self.DNATrash = ""
 		self.frequencies = []
 
 	#################### Translate METHOD ####################################
@@ -434,15 +530,19 @@ class tRNA():
 	# exists 
 	##########################################################################
 	def Translate(self):
-		self.complement = get_complement_tRNA(self.sequence)
-		# Cambiar todos los self.sequence y self.size por los del complemento
-		#print(self.sequence)
+
 		Start = False
 		End = True
-		for i in range(0, self.size, 3):
+		
+		for i in range(0, self.lenght, 3):
+			
 			Trio = self.sequence[i] + self.sequence[i+1] + self.sequence[i+2]
-			if not self.frequencies:
-				self.frequencies.append([Trio, 1])
+			
+			Val = self.bases.index(self.sequence[i]) * 16 \
+			+ self.bases.index(self.sequence[i+1]) * 4 \
+			+ self.bases.index(self.sequence[i+2]) * 1
+			
+			if not self.frequencies: self.frequencies.append([Trio, 1, self.aminoacids[Val]])
 			else:
 				j = 0
 				while j < len(self.frequencies):
@@ -451,19 +551,22 @@ class tRNA():
 						break
 					j += 1
 				else:	
-					self.frequencies.append([Trio, 1])
+					self.frequencies.append([Trio, 1, self.aminoacids[Val]])
+			
 			if Trio == 'AUG' and not Start:
 				Start = True
 				Start_index = i
 				End = False
 				Temp_proteins = []
 				continue
+			
 			if Start and Trio != 'UAA' and Trio != 'UAG' and Trio != 'UGA':
 					Value = self.bases.index(self.sequence[i]) * 16 \
 					+ self.bases.index(self.sequence[i+1]) * 4 \
 					+ self.bases.index(self.sequence[i+2]) * 1
 					Temp_proteins.append(self.aminoacids[Value])
 					continue
+			
 			if Start and (Trio == 'UAA' or Trio == 'UAG' or Trio == 'UGA'):
 				self.proteins.append(Temp_proteins)
 				del Temp_proteins
@@ -472,26 +575,23 @@ class tRNA():
 				continue
 		else:
 			if Start and not End:
-				#Start_index += 3 # If this is commented, the AUG will be taken into
+				#Start_index += 3  If this is commented, the AUG will be taken into
 				# account for trash.
 				Trash = ''
 				while Start_index != i+3:
-					Temp_trash = self.sequence[Start_index] + self.sequence[Start_index+1] \
-					+ self.sequence[Start_index+2]
-					Trash += Temp_trash
-					Start_index += 3
-				self.DNATrash.append(transliterate_seq(Trash))
+					self.DNATrashTemp.append(transliterate_seq(self.sequence[Start_index]))
+					Start_index += 1
 				self.tRNATrash.append(Trash)
 
 		heapsort(self.frequencies)
 		quicksort(self.proteins)
-		#print(self.DNATrash)
-		mergesort(self.DNATrash)
-		#print(self.DNATrash)
-		#print(self.frequencies)
-		#print(self.proteins)
-		#print(self.tRNATrash)
-		loop_heap(self.frequencies)
+		mergesort(self.DNATrashTemp, 0, len(self.DNATrashTemp)-1)
+		self.DNATrash = trash_transform(self.DNATrashTemp)
+		#print('Proteinas:',self.proteins)
+		#print('Basura ADN:', self.DNATrash)	
+		#print('Frecuencias:', self.frequencies)
+		#print('Basura ARN Transporte:',self.tRNATrash)
+		#loop_heap(self.frequencies)
 
 	############################### write METHOD ###############################
 	# Description: Add (creates) to a (a) file with the array of proteins
@@ -499,12 +599,20 @@ class tRNA():
 	# Output: True if the proteins are written
 	############################################################################
 	def write(self, file):
-		with open(file, 'a') as f:
-			f.write(self.proteins + '\n')
-			f.close()		
-		assert(f.closed)
+		if not self.proteins:
+			print('There are no proteins in this sequence')
 
-		return True
+			return False
+		else:
+			with open(file, 'a') as f:
+				for proteins in self.proteins:
+					for elem in proteins:
+						f.write(elem+',')
+				f.write('\n')
+				f.close()		
+			assert(f.closed)
+
+			return True
 
 ################################################################################
 #								MAIN PROGRAM								   #
@@ -519,17 +627,8 @@ if __name__ == '__main__':
 	DNA.printpairs()
 	DNA.write('cadenas.txt')	
 	
-	'''
-	aminoacidos = read_sequence('complejo.txt')
-	for i in aminoacidos:
-		DNAs = DNASimple(get_complement(i))
-		DNAs.complement()
-		transliterated = DNAs.transliterate()
-		protein = tRNA(transliterated)
-		protein.Translate()
-	'''
+	read_strands('archivo.txt')
 
-	#print('y el de siempre...')		
 	var = get_complement("ATGTTTTTCTTATTGTCTTCCTCATCGTATTACTAAATGACGATAGTAGATTGAATGTTCTAAATGTTTATGTCTTAAATGCTTAACTGAATGTTCAGCTAGATGGAGTAT")
 	DNAs = DNASimple(var)
 	DNAs.complement() # If you don't call this method first, the transliterate method
@@ -537,3 +636,13 @@ if __name__ == '__main__':
 
 	protein = tRNA(transliterated)
 	protein.Translate()
+	protein.write('proteinas.txt')
+
+	aminoacidos = read_sequence('complejo.txt')
+	for i in aminoacidos:
+		DNAs = DNASimple(get_complement(i))
+		DNAs.complement()
+		transliterated = DNAs.transliterate()
+		protein = tRNA(transliterated)
+		protein.Translate()
+		protein.write('proteinascomplejas.txt')
