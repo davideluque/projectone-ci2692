@@ -56,46 +56,6 @@ def get_complement(sequence):
 
 	return complement
 
-# Function read strands: read a file that it conteins strands of DNA, then the creates the complement and finally write doble DNA in pairs
-# Parameters:
-#
-def read_strands(DnaFile):
-	DNAsimple = []
-	with open(DnaFile, 'r') as f:
-		for line in f:
-			line = line.rstrip()
-			DNAsimple.append(line)
-		print('Beginning to read a strand file...')
-		print(DNAsimple)	
-	f.close()
-
-	complements = []
-	for elements in DNAsimple:
-		get_complement(elements)
-		complements.append(get_complement(elements))
-	print('Getting complement...')
-	print(complements)
-
-	DNADoble = []
-	for i in range(0,len(complements)):
-		for core in complements[i]:
-			if core == "A":
-				DNADoble += "AT"
-			elif core == "T":
-				DNADoble += "TA"
-			elif core == "G":
-				DNADoble += "GC"
-			elif core == "C":
-				DNADoble += "CG"
-	print('Getting DNADoble...')
-	print(DNADoble)
-	
-	print('Create the pars...')
-	for i in range(0, len(DNADoble), 2):
-		print('(' + Fore.RED + DNADoble[i], Fore.BLUE + DNADoble[i+1], Style.RESET_ALL+')', sep ='', end='')
-
-print(read_strands('data.txt'))
-
 ######################### transliterate_seq METHOD #############################
 # Description: This method receives a RNA sequence and transliterates it by
 #			   changing Uracyl for Timine and viceversa
