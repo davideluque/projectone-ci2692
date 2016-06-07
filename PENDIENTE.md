@@ -5,15 +5,16 @@ Pendiente
 + Todas las clases deben tener el método escribir(archivo) que guarda respectivamente todas las cadenas o proteínas almacenadas.
 
 <b>*Clase ADNDoble:*</b>
-DONE ~~Método buscar debería retornar la posición inicial en la que se encuentra la secuencia.~~
-DONE ~~Cerrar el archivo después de guardarlo y colocar un salto de línea~~
-DONE ~~En zip arreglar el procedimiento con get_complement~~
-DONE ~~En mitosis usar la función zip~~
-DONE ~~Llamar a unzip sin haber llamado a zip no genera nada ¿Excepciones?~~
++ DONE ~~Método buscar debería retornar la posición inicial en la que se encuentra la secuencia.~~
++ DONE ~~Cerrar el archivo después de guardarlo y colocar un salto de línea~~
++ DONE ~~En zip arreglar el procedimiento con get_complement~~
++ DONE ~~En mitosis usar la función zip~~
++ DONE ~~Llamar a unzip sin haber llamado a zip no genera nada ¿Excepciones?~~
 
 <b>*Clase ARNt:*</b>
-DONE ~~Crear un método para complementar el ARNt o modificar los existentes para que detecten si se está en presencia de URACILO o de TIMINA~~
-DONE ~~Ordenar alfabéticamente proteínas de igual tamaño~~
++ Recorrer el heap imprimiendo los codones comunes y su frecuencia, escribir la proteina que codificaria esa secuencia
++ DONE ~~Crear un método para complementar el ARNt o modificar los existentes para que detecten si se está en presencia de URACILO o de TIMINA~~
++ DONE ~~Ordenar alfabéticamente proteínas de igual tamaño~~
 ___
 
 Dudas
