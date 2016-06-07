@@ -3,10 +3,12 @@
 # Project 1: Implementing of algorithms to emulate the synthesis process of 
 # 			 proteins.
 # Authors: David Cabeza 13-10191, Fabiola Martinez 13-10838
-# Last edit: Tue 31, May 2016
+# Last edit: Mon 06, May 2016
 
 import sys
 from random import randint
+from colorama import *
+init()
 
 ################################################################################
 #								METHODS										   #
@@ -66,6 +68,31 @@ def transliterate_seq(sequence):
 		else: temp += base
 
 	return temp
+
+############################# read_sequence METHOD #################################
+# Description: Reads a file that contains sequences of DNA and stores them in an
+#			   array.
+# Input: Receives file name.
+# Output: An array with the sequences.
+################################################################################
+def read_sequence(DnaFile):
+	
+	DNA_sequences = []
+	
+	with open(DnaFile, 'r') as f:
+
+		for line in f:
+			line = line.rstrip()
+			if line:
+				DNA_sequences.append(line)
+		
+		f.close()
+
+	return DNA_sequences
+
+def loop_heap(heap):
+	for heaps in heap:
+		print('Codon:', heaps[0], 'with frequency:', heaps[1])
 
 ########################### quicksort METHOD ###################################
 # Description: This quicksort sorts the array given by the lenght of the arrays 
@@ -298,19 +325,21 @@ class DNADouble(object):
 	def printpairs(self):
 		print()
 		for i in range(0, len(self.double), 2):
-			print('(',self.double[i],self.double[i+1],')', sep ='', end='')
+			print('('+ Fore.RED + self.double[i], Fore.BLUE + self.double[i+1], Style.RESET_ALL + ')', sep ='', end='')
 		print()
 
 	############################### write METHOD ###############################
 	# Description: Add (creates) to a (a) file with the double DNA sequence
 	# Input: Name of the file
-	# Output: Pairs in parentheses () of double DNA
+	# Output: True if the sequence is written 
 	############################################################################
 	def write(self, file):
 		with open(file, 'a') as f:
 			f.write(self.double + '\n')
 			f.close()		
 		assert(f.closed)
+
+		return True
 
 class DNASimple(object):
 	"""Instances: Simple DNA sequence"""
@@ -367,6 +396,19 @@ class DNASimple(object):
 
 		return self.tRNA
 
+	############################### write METHOD ###############################
+	# Description: Add (creates) to a (a) file with the simple DNA sequence
+	# Input: Name of the file
+	# Output: True if the sequence is written
+	############################################################################
+	def write(self, file):
+		with open(file, 'a') as f:
+			f.write(self.sequence + '\n')
+			f.close()		
+		assert(f.closed)
+
+		return True
+
 class tRNA():
 	"""docstring for tRNA"""
 	def __init__(self, sequence):
@@ -422,7 +464,7 @@ class tRNA():
 					+ self.bases.index(self.sequence[i+2]) * 1
 					Temp_proteins.append(self.aminoacids[Value])
 					continue
-			if Trio == 'UAA' or Trio == 'UAG' or Trio == 'UGA':
+			if Start and (Trio == 'UAA' or Trio == 'UAG' or Trio == 'UGA'):
 				self.proteins.append(Temp_proteins)
 				del Temp_proteins
 				Start = False
@@ -443,13 +485,26 @@ class tRNA():
 
 		heapsort(self.frequencies)
 		quicksort(self.proteins)
-		print(self.DNATrash)
+		#print(self.DNATrash)
 		mergesort(self.DNATrash)
-		print(self.DNATrash)
+		#print(self.DNATrash)
 		#print(self.frequencies)
 		#print(self.proteins)
 		#print(self.tRNATrash)
+		loop_heap(self.frequencies)
 
+	############################### write METHOD ###############################
+	# Description: Add (creates) to a (a) file with the array of proteins
+	# Input: Name of the file
+	# Output: True if the proteins are written
+	############################################################################
+	def write(self, file):
+		with open(file, 'a') as f:
+			f.write(self.proteins + '\n')
+			f.close()		
+		assert(f.closed)
+
+		return True
 
 ################################################################################
 #								MAIN PROGRAM								   #
@@ -463,7 +518,18 @@ if __name__ == '__main__':
 	DNA.mitosis()
 	DNA.printpairs()
 	DNA.write('cadenas.txt')	
+	
+	'''
+	aminoacidos = read_sequence('complejo.txt')
+	for i in aminoacidos:
+		DNAs = DNASimple(get_complement(i))
+		DNAs.complement()
+		transliterated = DNAs.transliterate()
+		protein = tRNA(transliterated)
+		protein.Translate()
+	'''
 
+	#print('y el de siempre...')		
 	var = get_complement("ATGTTTTTCTTATTGTCTTCCTCATCGTATTACTAAATGACGATAGTAGATTGAATGTTCTAAATGTTTATGTCTTAAATGCTTAACTGAATGTTCAGCTAGATGGAGTAT")
 	DNAs = DNASimple(var)
 	DNAs.complement() # If you don't call this method first, the transliterate method
